@@ -19,7 +19,7 @@ pipeline {
     stage("Send Email") {
       steps {
         script {
-          echo "EMAIL"
+          echo diff
         }
       }
     }
