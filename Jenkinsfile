@@ -2,12 +2,18 @@ pipeline {
   agent any
 
   stages {
-    stage("Check Branches") {
+    stage("Check Diff") {
       steps {
         script {
-          // Branch가 master이면
-          sh 'printenv'
+          checkout scmGit(
+            branches: [[name: 'develop']],
+            userRemoteConfigs: [[
+              credentialsId: 'lgu-it-sre',
+              url: 'https://github.com/lgu-it-sre/jenkins-shared-lib.git'
+            ]]
+          )
         }
+        def diff = sh(script: "git diff ${env.before}..${env.after}", returnStdout: true)
       }
     }
     stage("Send Email") {
