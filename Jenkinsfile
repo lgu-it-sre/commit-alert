@@ -12,14 +12,20 @@ pipeline {
               url: 'https://github.com/lgu-it-sre/jenkins-shared-lib.git'
             ]]
           )
+          diff = sh(script: "git diff ${env.before}..${env.after}", returnStdout: true)
         }
-        def diff = sh(script: "git diff ${env.before}..${env.after}", returnStdout: true)
       }
     }
     stage("Send Email") {
       steps {
         script {
-          echo diff
+          html = diff.replaceAll('\n', '<br>').replaceAll(' ', '&nbsp;')
+          emailext(
+            subject: "SI JENKINS-NUCUBE-LIB 변경사항",
+            body: "<pre>${html}</pre>",
+            to: recipients.join(','),
+            from: 'noreply@mail.com'
+          )
         }
       }
     }
